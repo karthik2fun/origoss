@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: app-of-apps
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: test
+          - env: acceptance
+          - env: production
+  template:
+    metadata:
+      name: '{{env}}-apps'
+    spec:
+      project: default
+      source:
+        repoURL: 'https://github.com/your-username/devops-repo.git'  
+        targetRevision: HEAD
+        path: 'argocd' 
+      destination:
+        server: 'https://kubernetes.default.svc'
+        namespace: '{{env}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

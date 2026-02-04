@@ -1,0 +1,67 @@
+origoss-assignment-repo/
+├── README.md                  # Updated: Add instructions for NGINX Ingress via Helm
+├── .github/
+│   └── workflows/
+│       ├── terraform-plan.yaml
+│       └── terraform-apply.yaml
+├── terraform/
+│   ├── main.tf
+│   ├── providers.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── backend.tf
+│   ├── terraform.tfvars.example
+│   ├── modules/
+│   │   ├── gke/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   │   ├── cloud_sql/
+│   │   │   ├── main.tf
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   │   ├── argocd_install/
+│   │   │   ├── main.tf        # Updated: Bootstrap includes nginx-ingress-app.yaml if needed
+│   │   │   ├── variables.tf
+│   │   │   ├── outputs.tf
+│   └── environments/
+│       ├── test/
+│       │   ├── main.tf
+│       │   └── terraform.tfvars
+│       ├── acceptance/
+│       │   ├── main.tf
+│       │   └── terraform.tfvars
+│       └── production/
+│           ├── main.tf
+│           └── terraform.tfvars
+├── k8s/                       # Updated: Remove nginx-ingress dirs; keep ghost
+│   ├── base/
+│   │   ├── ghost/
+│   │   │   ├── deployment.yaml
+│   │   │   ├── service.yaml
+│   │   │   ├── ingress.yaml     # Updated: Assumes ingress.className: "nginx"
+│   │   │   ├── pvc.yaml
+│   │   │   └── kustomization.yaml
+│   └── overlays/
+│       ├── test/
+│       │   └── ghost/
+│       │       └── kustomization.yaml
+│       ├── acceptance/
+│       │   └── ghost/
+│       │       └── kustomization.yaml
+│       └── production/
+│           └── ghost/
+│               └── kustomization.yaml
+├── helm/
+│   └── values/
+│       └── nginx-ingress/
+│           ├── test.yaml          # e.g., 1 replica, small resources
+│           ├── acceptance.yaml    # e.g., 2 replicas
+│           └── production.yaml    # e.g., 3 replicas, metrics enabled
+├── argocd/
+│   ├── app-of-apps.yaml       # Updated: Includes nginx-ingress-app.yaml in the path
+│   ├── ghost-app.yaml         # Points to k8s/ghost (Kustomize)
+│   └── nginx-ingress-app.yaml # New: ArgoCD Application for Helm-based NGINX Ingress
+└── docs/
+    ├── architecture.md
+    └── presentation.pptx

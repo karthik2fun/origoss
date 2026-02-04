@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghost
+spec:
+  replicas: 1  # Overridden in overlays
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - name: ghost
+        image: ghost:5-alpine
+        ports:
+        - containerPort: 2368
+        env:
+        - name: url
+          value: "https://your-blog-domain.com"
+        - name: database__client
+          value: mysql
+        - name: database__connection__host
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: host  # From Cloud SQL output, mounted as secret
+        - name: database__connection__user
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: user
+        - name: database__connection__password
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: password
+        - name: database__connection__database
+          value: ghost
+        volumeMounts:
+        - name: content
+          mountPath: /var/lib/ghost/content
+      volumes:
+      - name: content
+        persistentVolumeClaim:
+          claimName: ghost-pvc
